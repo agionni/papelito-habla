@@ -1190,7 +1190,7 @@ const Sonido = (() => {
     if (!ctx) {
       ctx = new Contexto();
       salida = ctx.createGain();
-      salida.gain.value = 0.9;
+      salida.gain.value = 0.54; // 40 % menos que la mezcla anterior (0.9)
       salida.connect(ctx.destination);
       // iOS desbloquea el audio si suena algo dentro del mismo toque.
       const mudo = ctx.createBufferSource();
