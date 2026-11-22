@@ -46,6 +46,8 @@
   --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
   --suave: cubic-bezier(.22, 1, .36, 1);
   --resorte: cubic-bezier(.2, .8, .2, 1);
+  --t-vivo: translate .5s var(--resorte), scale .5s var(--resorte), rotate .7s var(--resorte), box-shadow .5s var(--suave), opacity .4s var(--suave);
+  --t-viva: translate .45s var(--resorte), scale .45s var(--resorte), rotate .16s linear, box-shadow .45s var(--suave), opacity .3s var(--suave);
   --guilloche: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='22'%3E%3Cg fill='none' stroke='%23ede5d3' stroke-width='.7'%3E%3Cpath stroke-opacity='.065' d='M0 11c8-9 24-9 32 0s24 9 32 0'/%3E%3Cpath stroke-opacity='.045' d='M0 11c8 9 24 9 32 0s24-9 32 0'/%3E%3C/g%3E%3C/svg%3E");
   --grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.4 1.75'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   color-scheme: dark;
@@ -147,7 +149,7 @@ body[data-pantalla=inicio] .marca { visibility: hidden; }
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04), 0 12px 26px rgba(0, 0, 0, .35);
   color: var(--papel); font: 500 19px/1.15 var(--serif); letter-spacing: -.01em;
   -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-  transition: transform .25s var(--suave), border-color .25s, background .25s;
+  transition: translate .35s var(--resorte), scale .35s var(--resorte), border-color .25s, background .25s, box-shadow .35s var(--suave);
 }
 .puerta small { font: 400 12px/1.2 var(--sans); color: var(--tenue); }
 .puerta.principal {
@@ -155,8 +157,8 @@ body[data-pantalla=inicio] .marca { visibility: hidden; }
   box-shadow: inset 0 1px 0 #fffbf2, 0 4px 0 -1px #a79c82, 0 16px 30px rgba(0, 0, 0, .45);
 }
 .puerta.principal small { color: var(--tinta-2); }
-.puerta:active { transform: translateY(2px) scale(.995); }
-@media (hover: hover) { .puerta:hover { transform: translateY(-2px); border-color: rgba(237, 229, 211, .36); } .puerta.principal:hover { border-color: #fffbf2; } }
+.puerta:active { translate: 0 2px; scale: .995; }
+@media (hover: hover) { .puerta:hover { translate: 0 -2px; border-color: rgba(237, 229, 211, .36); } .puerta.principal:hover { border-color: #fffbf2; box-shadow: inset 0 1px 0 #fffbf2, 0 6px 0 -1px #a79c82, 0 22px 38px rgba(0, 0, 0, .5); } }
 .fila-acciones { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 2px; color: #6f6d68; }
 .papel { position: relative; background: var(--papel); color: var(--tinta); color-scheme: light; border-radius: 7px; box-shadow: 0 24px 50px rgba(0, 0, 0, .45), inset 0 0 0 1px rgba(255, 255, 255, .35); }
 .papel .callado { color: var(--tinta-2); }
@@ -167,6 +169,23 @@ body[data-pantalla=inicio] .marca { visibility: hidden; }
 @keyframes latido { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
 @keyframes naipe-entra { from { opacity: 0; transform: translate3d(0, 46vh, 0) rotate(0deg); } }
 @keyframes linea-entra { from { opacity: 0; transform: translate3d(0, 28px, 0); clip-path: inset(0 0 100% 0); } to { opacity: 1; transform: none; clip-path: inset(0 0 -20% 0); } }
+
+/* ---------- cartas vivas: con ratón se inclinan hacia el cursor, se levantan y un brillo sigue al puntero ---------- */
+[data-vivo] { rotate: 0 1 0 0deg; }
+[data-vivo].viva { rotate: var(--ax, 0) var(--ay, 1) 0 var(--ang, 0deg); transition: var(--t-viva); }
+.lamina[data-vivo].viva { transition: transform .62s var(--suave), opacity .45s var(--suave), rotate .16s linear; }
+.inicio-mazo { transition: var(--t-vivo); }
+.mundo-carta, .tres-papeles article { position: relative; transition: var(--t-vivo); }
+.mundo-carta.viva { translate: 0 -6px; scale: 1.015; }
+.tres-papeles article.viva { translate: 0 -4px; }
+.accion::after, .mini::after, .naipe-cara::after, .mundo-carta::after, .lamina::after, .tres-papeles article::after {
+  content: ''; position: absolute; inset: 0; z-index: 5; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 35%), rgba(255, 249, 234, .6), rgba(255, 249, 234, 0) 60%);
+  mix-blend-mode: soft-light; opacity: 0; transition: opacity .5s var(--suave);
+}
+.viva::after, .viva .mini::after, .viva .naipe-cara::after { opacity: 1; }
+.puerta.llama { animation: llama 1.1s var(--suave); }
+@keyframes llama { 0% { translate: 0 0; } 30% { translate: 0 -6px; box-shadow: inset 0 1px 0 #fffbf2, 0 4px 0 -1px #a79c82, 0 0 0 4px rgba(237, 229, 211, .22), 0 22px 40px rgba(0, 0, 0, .5); } 100% { translate: 0 0; } }
 
 /* ---------- inicio ---------- */
 .inicio {
@@ -187,7 +206,7 @@ body[data-pantalla=inicio] .marca { visibility: hidden; }
   position: absolute; top: 12px; left: calc(50% - 68px); width: 136px; height: 196px;
   border-radius: 5px; overflow: hidden; background: var(--papel);
   box-shadow: 0 18px 40px rgba(0, 0, 0, .6), inset 0 0 0 1px rgba(255, 255, 255, .25);
-  transition: transform .6s var(--suave);
+  transition: translate .7s var(--resorte), rotate .7s var(--resorte), scale .7s var(--resorte);
 }
 .mini img { width: 100%; height: 100%; object-fit: cover; }
 .mini.izq { transform: translate3d(-68px, 10px, 0) rotate(-13deg); animation: mini-izq 1s .34s var(--resorte) backwards; }
@@ -197,11 +216,9 @@ body[data-pantalla=inicio] .marca { visibility: hidden; }
 @keyframes mini-der { from { transform: translate3d(0, 70vh, 0) rotate(0deg); } }
 @keyframes mini-frente { from { transform: translate3d(0, 70vh, 0) rotate(8deg); } }
 @keyframes flotar { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(0, -8px, 0); } }
-@media (hover: hover) {
-  .inicio-mazo:hover .mini.izq { transform: translate3d(-90px, 14px, 0) rotate(-18deg); }
-  .inicio-mazo:hover .mini.der { transform: translate3d(90px, 14px, 0) rotate(18deg); }
-  .inicio-mazo:hover .mini.centro { transform: translate3d(0, -8px, 0) scale(1.03); }
-}
+.inicio-mazo.viva .mini.izq { translate: -24px 5px; rotate: -5deg; }
+.inicio-mazo.viva .mini.der { translate: 24px 5px; rotate: 5deg; }
+.inicio-mazo.viva .mini.centro { translate: 0 -10px; scale: 1.035; }
 .inicio-puertas { display: grid; gap: 10px; width: min(100%, 330px); margin-top: 18px; }
 .inicio-puertas .puerta { animation: subir .9s .74s var(--suave) backwards; }
 .inicio-puertas .puerta + .puerta { animation-delay: .86s; }
@@ -213,19 +230,19 @@ body[data-pantalla=inicio] .marca { visibility: hidden; }
   .mini.der { transform: translate3d(96px, 14px, 0) rotate(13deg); }
   .inicio-puertas { width: 360px; margin-top: 26px; }
 }
-@media (hover: hover) and (min-width: 900px) and (min-height: 760px) {
-  .inicio-mazo:hover .mini.izq { transform: translate3d(-122px, 18px, 0) rotate(-18deg); }
-  .inicio-mazo:hover .mini.der { transform: translate3d(122px, 18px, 0) rotate(18deg); }
+@media (min-width: 900px) and (min-height: 760px) {
+  .inicio-mazo.viva .mini.izq { translate: -30px 6px; }
+  .inicio-mazo.viva .mini.der { translate: 30px 6px; }
 }
 
 /* ---------- pregunta: una mano de tres cartas ---------- */
 .pregunta { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 16px max(16px, env(safe-area-inset-bottom)); text-align: center; }
 .pregunta .narracion { max-width: 18em; margin: 0 auto 30px; font-size: clamp(22px, 5.9vw, 34px); line-height: 1.24; color: var(--papel); animation: subir .9s .05s var(--suave) backwards; }
-.mano { display: flex; justify-content: center; gap: 10px; width: min(100%, 560px); perspective: 1400px; }
+.mano { display: flex; justify-content: center; gap: 10px; width: min(100%, 560px); perspective: 1100px; }
 .naipe {
   position: relative; flex: 1 1 0; max-width: 172px; aspect-ratio: 2 / 3.05;
   padding: 0; border: 0; background: none; border-radius: 7px;
-  transition: transform .5s var(--suave);
+  transition: var(--t-vivo);
   animation: naipe-entra .72s var(--resorte) backwards;
 }
 .naipe:nth-child(1) { transform: translate3d(0, 12px, 0) rotate(-5deg); animation-delay: .1s; }
@@ -254,9 +271,10 @@ body[data-pantalla=inicio] .marca { visibility: hidden; }
   color: var(--sello); transform: translateX(-50%) rotate(-8deg); opacity: .78;
   -webkit-mask-image: var(--grano); mask-image: var(--grano); -webkit-mask-size: 130px; mask-size: 130px;
 }
-.mano.decidida .naipe.elegido { transform: translate3d(0, -18px, 0) scale(1.07); z-index: 2; }
+.mano.decidida .naipe.elegido { translate: 0 -18px; scale: 1.07; z-index: 2; }
 .mano.decidida .naipe.elegido .naipe-cara { box-shadow: 0 0 0 1.5px var(--papel), 0 26px 50px rgba(0, 0, 0, .6); }
-@media (hover: hover) { .mano:not(.decidida) .naipe:hover { transform: translate3d(0, -10px, 0) rotate(0deg) scale(1.03); z-index: 2; } }
+.naipe.viva { translate: 0 -12px; scale: 1.045; z-index: 3; }
+.mano:not(.decidida):has(.viva) .naipe:not(.viva) { opacity: .74; scale: .985; }
 .pregunta .pista { margin-top: 28px; animation: aparecer 1s 1.4s backwards; }
 
 /* ---------- la mesa ---------- */
@@ -462,12 +480,12 @@ body[data-pantalla=inicio] .marca { visibility: hidden; }
 
 /* ---------- carrusel de láminas: el final, la guía, las herramientas, los créditos ---------- */
 .carrusel { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
-.carrusel-zona { position: relative; flex: 1; min-height: 0; container-type: size; display: grid; place-items: center; }
+.carrusel-zona { position: relative; flex: 1; min-height: 0; container-type: size; display: grid; place-items: center; perspective: 1400px; }
 .carrusel-mazo { position: relative; height: 100cqh; width: min(calc(100cqw - 20px), 68cqh, 430px); }
 .lamina {
   position: absolute; inset: 0; border-radius: 7px; overflow: hidden;
   transform-origin: 50% 90%;
-  transition: transform .62s var(--suave), opacity .45s var(--suave);
+  transition: transform .62s var(--suave), opacity .45s var(--suave), rotate .7s var(--resorte);
   box-shadow: 0 22px 46px rgba(0, 0, 0, .55);
   touch-action: pan-y; -webkit-user-select: none; user-select: none;
 }
@@ -535,7 +553,7 @@ body[data-pantalla=inicio] .marca { visibility: hidden; }
 .puente { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 640px; margin: 0 auto; padding: 0 20px max(20px, env(safe-area-inset-bottom)); text-align: center; }
 .puente h1 { animation: subir .9s .06s var(--suave) backwards; }
 .puente .bajada { max-width: 25em; margin-top: 14px; font: 400 clamp(16px, 4.3vw, 19px)/1.46 var(--serif); color: #dedad2; animation: subir .9s .16s var(--suave) backwards; }
-.tres-papeles { display: grid; grid-template-columns: 1fr; gap: 9px; width: 100%; margin: 24px 0; }
+.tres-papeles { display: grid; grid-template-columns: 1fr; gap: 9px; width: 100%; margin: 24px 0; perspective: 1100px; }
 .tres-papeles article {
   padding: 15px 18px; text-align: left;
   border-radius: 6px; background: linear-gradient(180deg, #f3ecdc, #e9e0cb); color: var(--tinta);
@@ -553,7 +571,7 @@ body[data-pantalla=inicio] .marca { visibility: hidden; }
 /* ---------- comparativa ---------- */
 .comparativa { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 900px; margin: 0 auto; padding: 0 16px max(12px, env(safe-area-inset-bottom)); }
 .comparativa h1 { max-width: 15em; font-size: clamp(25px, 6.8vw, 44px); animation: subir .9s .05s var(--suave) backwards; }
-.dos-mundos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 760px; margin: 20px 0 18px; }
+.dos-mundos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 760px; margin: 20px 0 18px; perspective: 1300px; }
 .mundo-carta { display: flex; flex-direction: column; overflow: hidden; border-radius: 7px; background: var(--papel); color: var(--tinta); box-shadow: 0 22px 46px rgba(0, 0, 0, .5); }
 .mundo-carta .carta-arte { flex: none; aspect-ratio: 4 / 3.2; }
 .mundo-carta .carta-arte img { transform: none; }
@@ -573,7 +591,7 @@ body[data-pantalla=inicio] .marca { visibility: hidden; }
 /* ---------- herramientas: las cuatro acciones ---------- */
 .herramientas { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 960px; margin: 0 auto; padding: 0 16px max(14px, env(safe-area-inset-bottom)); }
 .herramientas h1 { animation: subir .9s .05s var(--suave) backwards; }
-.cuatro { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 24px; }
+.cuatro { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 24px; perspective: 1100px; }
 .accion {
   position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; min-height: 150px;
   padding: 16px 15px; border: 0; border-radius: 7px; text-align: left;
@@ -581,13 +599,15 @@ body[data-pantalla=inicio] .marca { visibility: hidden; }
   box-shadow: 0 16px 34px rgba(0, 0, 0, .45);
   transform: rotate(calc((var(--k) - 1.5) * .9deg));
   animation: naipe-entra .8s calc(.2s + var(--k) * .08s) var(--resorte) backwards;
-  transition: transform .4s var(--suave), box-shadow .4s var(--suave);
+  transition: var(--t-vivo);
 }
 .accion .num { position: absolute; top: 12px; left: 15px; font: 400 30px/1 var(--serif); color: #b3ad9f; }
 .accion strong { font: 500 18px/1.15 var(--serif); letter-spacing: -.015em; }
 .accion span { font: 400 12.5px/1.4 var(--sans); color: var(--tinta-2); }
-.accion:active { transform: scale(.98); }
-@media (hover: hover) { .accion:hover { transform: translateY(-4px) rotate(0deg); box-shadow: 0 22px 40px rgba(0, 0, 0, .5); } }
+.accion:active { scale: .98; }
+.accion.viva { translate: 0 -8px; scale: 1.025; box-shadow: 0 34px 60px rgba(0, 0, 0, .55); }
+.cuatro:has(.viva) .accion:not(.viva) { opacity: .68; scale: .985; }
+
 @media (min-width: 760px) { .cuatro { grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 36px; } .accion { min-height: 250px; padding: 20px 18px; } .accion .num { top: 16px; left: 18px; font-size: 38px; } .accion strong { font-size: 21px; } .accion span { font-size: 13.5px; } }
 
 /* pasos de una herramienta: una carta de papel a la vez */
@@ -702,7 +722,9 @@ dialog.hoja::backdrop { background: rgba(6, 6, 7, .66); }
 
 /* Papelito habla · modo proyector */
 .proyector { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; overflow: hidden; background: var(--noche); color: var(--claro); }
-.proyector-mundo { position: absolute; inset: -5%; background: center 42% / cover no-repeat; opacity: .28; filter: saturate(.9); animation: deriva 50s ease-in-out infinite alternate; }
+.proyector-mundo { position: absolute; inset: -5%; opacity: .28; filter: saturate(.9); animation: deriva 50s ease-in-out infinite alternate; }
+.pm-capa { position: absolute; inset: 0; background: center 42% / cover no-repeat; opacity: 0; transition: opacity 1.6s var(--suave); }
+.pm-capa.visible { opacity: 1; }
 .proyector-velo { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(12, 12, 13, .95) 0%, rgba(12, 12, 13, .74) 46%, rgba(12, 12, 13, .52) 100%), linear-gradient(180deg, rgba(12, 12, 13, .4), rgba(12, 12, 13, 0) 30%, rgba(12, 12, 13, .6)); }
 .proyector .diapo { position: relative; overflow: hidden; width: min(100vw, 177.78vh); height: min(56.25vw, 100vh); container-type: size; }
 .diapo .arte-mazo { position: absolute; right: 7cqw; top: 9cqh; height: 78cqh; aspect-ratio: 2 / 3; animation: arte-entra 1s cubic-bezier(.2, .8, .2, 1) backwards; }
@@ -1335,11 +1357,16 @@ const Sonido = (() => {
     const d = DIAPOS[i];
     const A = arte();
     const nombre = d.arte || d.fondo || 'portada';
+    // El fondo cambia con un fundido cruzado entre dos capas: nunca se ilumina de más ni cae a oscuro de golpe.
     const mundo = raiz.querySelector('.proyector-mundo');
     if (mundo.dataset.arte !== nombre) {
       mundo.dataset.arte = nombre;
-      mundo.style.backgroundImage = `url("${A[nombre] || ''}")`;
-      if (mundo.animate) mundo.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 1100, easing: 'ease-out' });
+      const capas = mundo.querySelectorAll('.pm-capa');
+      const k = Number(mundo.dataset.capa || 0);
+      capas[1 - k].style.backgroundImage = `url("${A[nombre] || ''}")`;
+      capas[1 - k].classList.add('visible');
+      capas[k].classList.remove('visible');
+      mundo.dataset.capa = String(1 - k);
     }
     raiz.querySelector('.diapo').outerHTML = `<section class="diapo ${d.sinArte ? 'sin-arte' : ''}" style="--dir:${dir}" aria-roledescription="diapositiva" aria-label="${i + 1} de ${DIAPOS.length}">
       ${d.sinArte ? '' : `<div class="arte-mazo" aria-hidden="true"><div class="arte-dorso"></div><div class="arte"><img src="${A[d.arte] || ''}" alt=""></div></div>`}
@@ -1367,7 +1394,7 @@ const Sonido = (() => {
     if (raiz) return;
     raiz = document.createElement('div');
     raiz.className = 'proyector'; raiz.setAttribute('role', 'region'); raiz.setAttribute('aria-label', 'Modo proyector');
-    raiz.innerHTML = `<div class="proyector-mundo" aria-hidden="true"></div><div class="proyector-velo" aria-hidden="true"></div><section class="diapo"></section><div class="controles">
+    raiz.innerHTML = `<div class="proyector-mundo" aria-hidden="true"><div class="pm-capa"></div><div class="pm-capa"></div></div><div class="proyector-velo" aria-hidden="true"></div><section class="diapo"></section><div class="controles">
       <button data-d="-1" aria-label="Anterior">←</button><span class="cuenta"></span><button data-d="1" aria-label="Siguiente">→</button>
       <button data-f>Pantalla completa</button><button data-x>Salir</button></div>`;
     raiz.addEventListener('click', e => {
@@ -1514,6 +1541,35 @@ const Sonido = (() => {
     }, { passive: true });
   }
 
+  // Cartas vivas: con ratón, la carta bajo el cursor se inclina hacia él, se levanta y un brillo sigue al puntero.
+  // Usa las propiedades rotate/translate/scale, así no choca con las animaciones de entrada (que usan transform).
+  R.soltarViva = () => {};
+  if (punteroFino.matches) {
+    let viva = null;
+    R.soltarViva = () => { if (viva) { viva.classList.remove('viva'); viva = null; } };
+    document.addEventListener('pointermove', e => {
+      if (quieto() || e.pointerType !== 'mouse') return;
+      const el = e.target.closest ? e.target.closest('[data-vivo]') : null;
+      const sirve = el && !el.disabled && !el.classList.contains('arrastrando') && !R.arrastre && !hojaAbierta()
+        && (!el.classList.contains('lamina') || el.classList.contains('actual')) && !(el.closest('.mano.decidida'));
+      if (viva && viva !== el) R.soltarViva();
+      if (!sirve) { if (el && el === viva) R.soltarViva(); return; }
+      const r = el.getBoundingClientRect();
+      const x = Math.max(-0.5, Math.min(0.5, (e.clientX - r.left) / r.width - 0.5));
+      const y = Math.max(-0.5, Math.min(0.5, (e.clientY - r.top) / r.height - 0.5));
+      const ax = -y, ay = x, mag = Math.hypot(ax, ay);
+      const max = Number(el.dataset.vivo) || 8;
+      el.style.setProperty('--ax', mag < 0.01 ? '0' : (ax / mag).toFixed(3));
+      el.style.setProperty('--ay', mag < 0.01 ? '1' : (ay / mag).toFixed(3));
+      el.style.setProperty('--ang', `${(Math.min(mag / 0.5, 1.3) * max).toFixed(2)}deg`);
+      el.style.setProperty('--mx', `${((x + 0.5) * 100).toFixed(1)}%`);
+      el.style.setProperty('--my', `${((y + 0.5) * 100).toFixed(1)}%`);
+      if (viva !== el) { viva = el; el.classList.add('viva'); }
+    }, { passive: true });
+    document.documentElement.addEventListener('mouseleave', () => R.soltarViva());
+    window.addEventListener('blur', () => R.soltarViva());
+  }
+
   function pintarMundo(nombre) {
     if (!nombre || nombre === R.mundo || !ARTE[nombre]) return;
     R.mundo = nombre;
@@ -1542,6 +1598,7 @@ const Sonido = (() => {
   }
 
   function limpiar() {
+    R.soltarViva();
     R.abortar?.abort(); R.abortar = null;
     cancelAnimationFrame(R.cuadro); R.anim?.cancel(); R.anim = null; R.arrastre = null;
     clearTimeout(R.turno); clearTimeout(R.pista);
@@ -1580,7 +1637,7 @@ const Sonido = (() => {
     main.innerHTML = `<section class="inicio">
       <h1 id="inicio-titulo" tabindex="-1">Papelito habla<span>.</span></h1>
       <p class="inicio-bajada">Todos crecimos oyendo que el que calla otorga. <em>¿En el SAT también?</em></p>
-      <div class="inicio-mazo" aria-hidden="true">
+      <div class="inicio-mazo" data-vivo="7" aria-hidden="true">
         <div class="mini izq">${img('fonda', '')}</div>
         <div class="mini der">${img('ventanilla', '')}</div>
         <div class="mini centro">${img('imprenta', '')}</div>
@@ -1600,7 +1657,7 @@ const Sonido = (() => {
     main.innerHTML = `<section class="pregunta">
       <h1 class="narracion" id="pregunta-texto" tabindex="-1">${esc(PREGUNTA.texto)}</h1>
       <div class="mano" role="group" aria-labelledby="pregunta-texto">
-        ${PREGUNTA.opciones.map(o => `<button class="naipe" data-accion="responder" data-id="${o.id}" aria-label="${esc(o.etiqueta)}">
+        ${PREGUNTA.opciones.map(o => `<button class="naipe" data-vivo="13" data-accion="responder" data-id="${o.id}" aria-label="${esc(o.etiqueta)}">
           <span class="naipe-giro boca-abajo"><span class="naipe-dorso">${EMBLEMA}</span>
           <span class="naipe-cara"><span class="tinta" aria-hidden="true">${esc(o.sello)}</span><span class="naipe-texto">${esc(o.etiqueta)}</span></span></span></button>`).join('')}
       </div>
@@ -1738,6 +1795,7 @@ const Sonido = (() => {
         if (ficha !== R.ficha) return;
         sello.animate(M.sello(-9), { duration: 380, easing: 'cubic-bezier(.3,.7,.4,1)', fill: 'forwards' });
         S.tocar('sello', 200);
+        setTimeout(() => { if (navigator.vibrate) navigator.vibrate(12); }, 230);
         setTimeout(() => { if (ficha === R.ficha) carta.animate([{ transform: 'none' }, { transform: 'translate3d(0,3px,0) scale(.99)' }, { transform: 'none' }], { duration: 240, easing: 'ease-out' }); }, 235);
       }, 560);
     }
@@ -1978,6 +2036,7 @@ const Sonido = (() => {
     const recibo = P.s.recibo || '';
     if (!quieto()) { lanzar(carta, lado, soltada); desvanecer('.narracion'); desvanecer('.opciones'); desvanecer('.mesa .pista'); }
     S.tocar('lanzar');
+    if (soltada && navigator.vibrate) navigator.vibrate(8);
     if (P.s.papeles.length > antes) volarPapel(carta);
     P.i++;
     R.ocupado = false;
@@ -2005,7 +2064,10 @@ const Sonido = (() => {
     </div>`;
   }
 
-  function montarCarrusel(raiz, { alCambiar = null, inicial = 0 } = {}) {
+  // En el borde del mazo la lámina cede poco y cada vez menos, como una liga.
+  const elastico = dx => Math.sign(dx) * 64 * (1 - Math.exp(-Math.abs(dx) / 120));
+
+  function montarCarrusel(raiz, { alCambiar = null, alFinal = null, inicial = 0 } = {}) {
     const zona = $('.carrusel-mazo', raiz);
     const laminas = $$(':scope > .lamina', zona);
     const n = laminas.length;
@@ -2040,7 +2102,7 @@ const Sonido = (() => {
     };
     function ir(k) {
       const j = Math.max(0, Math.min(n - 1, k));
-      if (j === i) { empujon(k < i ? 1 : -1); return; }
+      if (j === i) { empujon(k < i ? 1 : -1); if (alFinal && k > i) alFinal(); return; }
       S.tocar(j > i ? 'lanzar' : 'repartir', 0, { nivel: 0.55 });
       i = j;
       raiz.classList.add('movido');
@@ -2051,35 +2113,40 @@ const Sonido = (() => {
     zona.addEventListener('pointerdown', e => {
       const l = e.target.closest('.lamina.actual');
       if (!l || !e.isPrimary || e.button !== 0 || R.bloquearCarrusel || esControl(e.target)) return;
-      a = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0, dy: 0, vel: 0, t: performance.now(), activo: false, l };
+      l.getAnimations().forEach(an => an.cancel());
+      a = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0, dy: 0, vel: 0, t: performance.now(), activo: false, l, mostrado: 0 };
     });
     zona.addEventListener('pointermove', e => {
       if (!a || e.pointerId !== a.id) return;
       const dx = e.clientX - a.x, dy = e.clientY - a.y;
       if (!a.activo && Math.abs(dy) > 12 && Math.abs(dy) > Math.abs(dx)) { a = null; return; }
       if (!a.activo && Math.abs(dx) < 8) return;
-      if (!a.activo) { a.activo = true; a.l.classList.add('arrastrando'); try { a.l.setPointerCapture(a.id); } catch (er) { /* sin captura */ } }
+      if (!a.activo) { a.activo = true; R.soltarViva(); a.l.classList.add('arrastrando'); try { a.l.setPointerCapture(a.id); } catch (er) { /* sin captura */ } }
       const ahora = performance.now();
       const inst = (dx - a.dx) / Math.max(8, ahora - a.t);
       a.vel = a.vel * 0.35 + inst * 0.65; a.t = ahora; a.dx = dx; a.dy = dy;
       const borde = (dx > 0 && i === 0) || (dx < 0 && i === n - 1);
-      if (!quieto()) a.l.style.transform = M.pose(borde ? dx * 0.3 : dx, dy * 0.3);
+      a.mostrado = borde ? elastico(dx) : dx;
+      if (!quieto()) a.l.style.transform = M.pose(a.mostrado, dy * 0.3);
     });
     const fin = e => {
       if (!a || e.pointerId !== a.id) return;
-      const { l, dx, dy, vel, activo, t } = a;
+      const { l, dx, dy, vel, activo, t, mostrado } = a;
       a = null;
       if (!activo) return;
       ignorarClic = true; setTimeout(() => { ignorarClic = false; }, 80);
-      l.classList.remove('arrastrando');
       const lado = M.intencion({ dx, vel, ancho: l.offsetWidth, edad: performance.now() - t });
-      if (lado === 'izq' && i < n - 1) { ir(i + 1); return; }
-      if (lado === 'der' && i > 0) { ir(i - 1); return; }
+      if (lado === 'izq' && i < n - 1) { l.classList.remove('arrastrando'); ir(i + 1); return; }
+      if (lado === 'der' && i > 0) { l.classList.remove('arrastrando'); ir(i - 1); return; }
+      // No hay más láminas de ese lado: regresa con resorte desde donde se ve, sin transición encima.
       l.style.transform = 'none';
-      if (!quieto()) l.animate(M.asentar(dx, dy * 0.3), { duration: 620, easing: 'linear' });
+      if (quieto()) l.classList.remove('arrastrando');
+      else l.animate(M.asentar(mostrado, dy * 0.3), { duration: 620, easing: 'linear' }).finished.catch(() => {}).finally(() => l.classList.remove('arrastrando'));
+      if (alFinal && i === n - 1 && dx < -30) alFinal();
     };
     zona.addEventListener('pointerup', fin);
     zona.addEventListener('pointercancel', fin);
+    zona.addEventListener('lostpointercapture', fin);
     // Tocar la lámina también la pasa, salvo que el toque caiga en un control.
     zona.addEventListener('click', e => {
       if (ignorarClic || R.bloquearCarrusel || !e.target.closest('.lamina.actual') || esControl(e.target)) return;
@@ -2094,7 +2161,7 @@ const Sonido = (() => {
   }
 
   /* ---------- final: la carta de tu lectura y lo que dice la ley ---------- */
-  const laminaPapel = (cuerpo, clase = '') => `<article class="lamina lamina-papel ${clase}">${cuerpo}</article>`;
+  const laminaPapel = (cuerpo, clase = '') => `<article class="lamina lamina-papel ${clase}" data-vivo="5">${cuerpo}</article>`;
 
   function vLectura() {
     const s = P.hoy;
@@ -2111,7 +2178,7 @@ const Sonido = (() => {
       : 'Pagaste el aguinaldo con un préstamo. Tu saldo a favor seguía en el SAT.')
       + (s.explico ? ' Y el compadre ya sabe cómo es la cosa.' : '');
     const laminas = [
-      `<article class="lamina lamina-arte carta-final" aria-label="Tu lectura: ${esc(L.titulo)}">
+      `<article class="lamina lamina-arte carta-final" data-vivo="6" aria-label="Tu lectura: ${esc(L.titulo)}">
         <div class="giro" ${llega ? 'style="transform:rotateY(180deg)"' : ''}>
           <div class="frente" ${llega ? 'inert' : ''}>
             <div class="carta-arte">${img(L.arte)}<span class="fecha">Elena · 2026</span></div>
@@ -2126,7 +2193,7 @@ const Sonido = (() => {
           <p>${acerto ? 'Le atinaste. Tres meses sin respuesta notificada te dejan darla por negada y defenderte, o seguir esperando.' : 'En el SAT, el que calla no otorga. Tres meses sin respuesta notificada te dejan darla por negada y defenderte, o seguir esperando.'}</p>
         </div>
         <p class="cita">Artículo 37 del Código Fiscal de la Federación</p>`, `veredicto ${acerto ? 'si' : 'no'}`) : '',
-      `<article class="lamina lamina-arte"><div class="carta-arte">${img('diciembre')}<span class="fecha">18 de diciembre</span></div><div class="carta-pie"><h2>En diciembre</h2><p>${esc(diciembre)}</p></div></article>`,
+      `<article class="lamina lamina-arte" data-vivo="5"><div class="carta-arte">${img('diciembre')}<span class="fecha">18 de diciembre</span></div><div class="carta-pie"><h2>En diciembre</h2><p>${esc(diciembre)}</p></div></article>`,
       laminaPapel(`<h2>Tu expediente</h2><ul class="lista-exp">${expediente(s).map(e => `<li class="${e.ok ? 'si' : ''}">${esc(e.texto)}</li>`).join('')}</ul><p class="cita">Lo que no está en papel, no existe.</p>`),
       ...LEY.map((l, k) => laminaPapel(`<p class="numero">${k + 1} de ${LEY.length}</p><h2>${esc(l.titulo)}</h2><p style="margin-top:16px">${esc(l.texto)}</p><p class="cita">${esc(l.cita)}</p>`, 'lamina-ley')),
     ].filter(Boolean);
@@ -2149,7 +2216,12 @@ const Sonido = (() => {
         S.tocar('sello', 220);
       }, 420);
     };
-    if (!llega) { montarCarrusel(raiz, { alCambiar }); return; }
+    const alFinal = () => {
+      const puerta = $('.cierre-acciones .puerta.principal', raiz);
+      if (!puerta || quieto()) return;
+      puerta.classList.remove('llama'); void puerta.offsetWidth; puerta.classList.add('llama');
+    };
+    if (!llega) { montarCarrusel(raiz, { alCambiar, alFinal }); return; }
     // Recién terminado el año: la carta llega boca abajo y se voltea.
     R.bloquearCarrusel = true;
     const carta = $('.carta-final');
@@ -2163,7 +2235,7 @@ const Sonido = (() => {
       ], { duration: 820, easing: 'cubic-bezier(.2,.8,.2,1)' });
     }
     S.tocar('repartir', 500);
-    R.reparto = { ficha, carta, alCambiar };
+    R.reparto = { ficha, carta, alCambiar, alFinal };
     const boton = $('.voltear', carta);
     boton.focus({ preventScroll: true });
     R.pista = setTimeout(() => boton.classList.add('visible'), 1100);
@@ -2172,7 +2244,7 @@ const Sonido = (() => {
 
   async function revelarFinal(ficha = R.ficha) {
     if (!R.reparto || R.reparto.ficha !== ficha || P.pantalla !== 'lectura') return;
-    const { carta, alCambiar } = R.reparto;
+    const { carta, alCambiar, alFinal } = R.reparto;
     R.reparto = null;
     clearTimeout(R.turno); clearTimeout(R.pista);
     const giro = $('.giro', carta), frente = $('.frente', carta), reverso = $('.reverso', carta);
@@ -2197,7 +2269,7 @@ const Sonido = (() => {
     raiz.classList.remove('por-revelar');
     raiz.classList.add('revelado');
     R.bloquearCarrusel = false;
-    montarCarrusel(raiz, { alCambiar });
+    montarCarrusel(raiz, { alCambiar, alFinal });
     if (!quieto()) $$('.lamina:not(.carta-final)', raiz).slice(0, 2).forEach((l, k) => l.animate(
       [{ transform: 'translate3d(0,50vh,0) rotate(0deg)', opacity: 0 }, { transform: l.style.transform, opacity: 1 }],
       { duration: 760, delay: 260 + k * 120, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards' }));
@@ -2212,9 +2284,9 @@ const Sonido = (() => {
       <h1 class="titulo-pantalla" tabindex="-1">Mismo caso, otro mundo.</h1>
       <p class="bajada">Imagina que el SAT ya aplica <em>Fisco Claro y Oportuno</em>. Elena, su saldo a favor y la tardanza del SAT son los mismos.</p>
       <div class="tres-papeles">
-        <article style="--k:0">El acuse dice cuánto puede tardar el SAT y qué hacer si no contesta.</article>
-        <article style="--k:1">El Buzón Tributario avisa con semáforo antes de que se venza un plazo.</article>
-        <article style="--k:2">Si el SAT se pasa del plazo, PRODECON está a un botón.</article>
+        <article data-vivo="5" style="--k:0">El acuse dice cuánto puede tardar el SAT y qué hacer si no contesta.</article>
+        <article data-vivo="5" style="--k:1">El Buzón Tributario avisa con semáforo antes de que se venza un plazo.</article>
+        <article data-vivo="5" style="--k:2">Si el SAT se pasa del plazo, PRODECON está a un botón.</article>
       </div>
       <button class="puerta principal" data-accion="jugar-propuesta">Jugar el mismo caso<small>2 minutos</small></button>
     </section>`;
@@ -2232,14 +2304,14 @@ const Sonido = (() => {
     main.innerHTML = `<section class="comparativa">
       <h1 class="titulo-pantalla" tabindex="-1">Elena era la misma. Cambió lo que el sistema le dijo a tiempo.</h1>
       <div class="dos-mundos">
-        <article class="mundo-carta hoy">
+        <article class="mundo-carta hoy" data-vivo="6">
           <div class="carta-arte">${img(L.arte)}<span class="fecha">Hoy</span></div>
           <div class="carta-pie"><h2>${esc(L.titulo)}</h2><ul>
             <li>${mesA ? `La devolución llegó en ${mesA}.` : 'La devolución no llegó en todo el año.'}</li>
             <li>${mesA ? 'El aguinaldo salió de su dinero.' : 'El aguinaldo salió de un préstamo.'}</li>
             <li>${a.marisol ? 'Supo sus plazos porque preguntó.' : 'Nadie le avisó de sus plazos.'}</li></ul></div>
         </article>
-        <article class="mundo-carta propuesta">
+        <article class="mundo-carta propuesta" data-vivo="6">
           <div class="carta-arte">${img('alerta')}<span class="fecha">Con la propuesta</span></div>
           <div class="carta-pie"><h2>La que sabía a tiempo</h2><ul>
             <li>La devolución llegó en ${esc(mesB)}, con intereses.</li>
@@ -2271,7 +2343,7 @@ const Sonido = (() => {
     if (h === 'alerta') return vAlerta();
     main.innerHTML = `<section class="herramientas">
       <h1 class="titulo-pantalla" tabindex="-1">Herramientas</h1>
-      <div class="cuatro">${ACCIONES.map((x, k) => `<button class="accion" style="--k:${k}" data-accion="herr" data-h="${x.id}"><span class="num" aria-hidden="true">${k + 1}</span><strong>${esc(x.titulo)}</strong><span>${esc(x.texto)}</span></button>`).join('')}</div>
+      <div class="cuatro">${ACCIONES.map((x, k) => `<button class="accion" data-vivo="9" style="--k:${k}" data-accion="herr" data-h="${x.id}"><span class="num" aria-hidden="true">${k + 1}</span><strong>${esc(x.titulo)}</strong><span>${esc(x.texto)}</span></button>`).join('')}</div>
     </section>`;
   }
 
